@@ -4,6 +4,7 @@ const PartnerSchema = new Schema(
   {
     logo: { type: String, required: true }, 
     link: { type: String, required: true },
+    name:{ type: String, required: true },
   },
   { timestamps: true }
 );

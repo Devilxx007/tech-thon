@@ -3,7 +3,7 @@ import { Event } from "@/models/events";
 import { successResponse, errorResponse } from "@/lib/apiResponse";
 
 // GET all events
-export async function GET() {
+export async function GET(){
   await connectToDB();
   try {
     const events = await Event.find();
@@ -14,7 +14,7 @@ export async function GET() {
 }
 
 // POST a new event
-export async function POST(req: Request) {
+export async function POST(req: Request){
   await connectToDB();
   try {
     const data = await req.json();

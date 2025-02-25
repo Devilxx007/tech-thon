@@ -1,30 +1,23 @@
 "use client";
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import Insta from "@/assets/icons/Insta"
 import { BsInstagram } from "react-icons/bs";
 import { BiCalendar, BiGlobe, BiPhone } from "react-icons/bi";
-import Technology from "@/assets/icons/Technology"
-import { BsMailbox } from "react-icons/bs";
 import { TbMessageFilled } from "react-icons/tb";
-import { CiLocationArrow1 } from "react-icons/ci";
 import { FaLocationPin } from "react-icons/fa6";
-import { CgWebsite } from "react-icons/cg";
 import Logo from "@/assets/icons/Logo"
-import { Carousel } from "@material-tailwind/react"
 import EventCard from "@/components/EventCard"
+import { Link } from "react-scroll";
+import "./futuristic-tessellation.css";
 export default function Home() {
   const fadeInVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
   };
-
   const SectionWrapper = ({ id, children }) => {
     const ref = useRef(null);
     const isInView = useInView(ref, { amount: 0.3 });
-
-
 
     return (
       <motion.section
@@ -40,104 +33,80 @@ export default function Home() {
     );
   };
 
-  const events = [
-    {
-      title: "Event 1",
-      description: "This is a description for Event 1.",
-      dates: "March 10, 2025",
-      quote: "Inspiration begins here.",
-      mode: "Online",
-    },
-    {
-      title: "Event 1",
-      description: "This is a description for Event 1.",
-      dates: "March 10, 2025",
-      quote: "Inspiration begins here.",
-      mode: "Online",
-    },
-    {
-      title: "Event 1",
-      description: "This is a description for Event 1.",
-      dates: "March 10, 2025",
-      quote: "Inspiration begins here.",
-      mode: "Online",
-    },
-    {
-      title: "Event 1",
-      description: "This is a description for Event 1.",
-      dates: "March 10, 2025",
-      quote: "Inspiration begins here.",
-      mode: "Online",
-    },
-    {
-      title: "Event 1",
-      description: "This is a description for Event 1.",
-      dates: "March 10, 2025",
-      quote: "Inspiration begins here.",
-      mode: "Online",
-    },
-    {
-      title: "Event 5",
-      description: "This is a description for Event 5.",
-      dates: "March 10, 2025",
-      quote: "Inspiration begins here.",
-      mode: "Online",
-    },
-  ];
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
 
   const Prizes = [
     { "title": "₹8L+", "subtitle": "Worth Prizes" },
     { "title": "₹14K", "subtitle": "Worth Cash Prizes" },
     { "title": "SWAGS", "subtitle": "Winner Get" }
   ]
-  const images = [
-    "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=2560&q=80",
-    "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=2940&q=80",
-    "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?auto=format&fit=crop&w=2762&q=80",
-  ];
+
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const goToPrevious = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+      prevIndex === 0 ? gallery.length - 1 : prevIndex - 1
     );
   };
 
   const goToNext = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+      prevIndex === gallery.length - 1 ? 0 : prevIndex + 1
     );
   };
 
-  const partners = [
-    {
-      name: "Tech Corp",
-      logo: "https://via.placeholder.com/100?text=Tech+Corp",
-    },
-    {
-      name: "InnovateX",
-      logo: "https://via.placeholder.com/100?text=InnovateX",
-    },
-    {
-      name: "NextGen Solutions",
-      logo: "https://via.placeholder.com/100?text=NextGen",
-    },
-    {
-      name: "AI Hub",
-      logo: "https://via.placeholder.com/100?text=AI+Hub",
-    },
-  ];
+
+  const [events, setEvents] = useState([]);
+  const [partners, setPartners] = useState([]);
+  const [gallery, setGallery] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch all three API endpoints in parallel
+        const [eventsRes, partnersRes, galleryRes] = await Promise.all([
+          fetch(`${BASE_URL}/events`).then((res) => res.json()),
+          fetch(`${BASE_URL}/partners`).then((res) => res.json()),
+          fetch(`${BASE_URL}/gallery`).then((res) => res.json()),
+        ]);
+
+        // Set the fetched data to state
+        setEvents(eventsRes.data);
+        setPartners(partnersRes.data);
+        setGallery(galleryRes.data);
+      } catch (err) {
+        setError("Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); // Runs only once when component mounts
+
+  // Log updated state
+  useEffect(() => {
+    console.log("Updated Events:", events);
+    console.log("Updated Partners:", partners);
+    console.log("Updated Gallery:", gallery);
+  }, [events, partners, gallery]);
+
+
+
 
   return (
     <div className="bg-[#0d1417] text-white min-h-screen font-sans">
       {/* Navbar */}
-      <nav className="w-full top-0 left-0  p-4 flex justify-center items-center shadow-lg z-50">
+      <nav className="w-full top-0 left-0 p-4 flex justify-center items-center shadow-lg z-50 fixed">
         <ul className="flex space-x-6 items-center justify-center">
-          <li><a href="#home" className="hover:text-blue-400 transition duration-300">Home</a></li>
-          <li><a href="#events" className="hover:text-blue-400 transition duration-300">Events</a></li>
-          <li><a href="#prizes" className="hover:text-blue-400 transition duration-300">Prizes</a></li>
-          <li><a href="#about" className="hover:text-blue-400 transition duration-300">About Us</a></li>
-          <li><a href="#contact" className="hover:text-blue-400 transition duration-300">Contact Us</a></li>
+          <li><Link to="home" smooth={true} duration={1000} className="cursor-pointer hover:text-blue-400 transition duration-300">Home</Link></li>
+          <li><Link to="Events" smooth={true} duration={1000} className="cursor-pointer hover:text-blue-400 transition duration-300">Events</Link></li>
+          <li><Link to="Prizes" smooth={true} duration={1000} className="cursor-pointer hover:text-blue-400 transition duration-300">Prizes</Link></li>
+          <li><Link to="About Us" smooth={true} duration={1000} className="cursor-pointer hover:text-blue-400 transition duration-300">About Us</Link></li>
+          <li><Link to="Contact Us" smooth={true} duration={1000} className="cursor-pointer hover:text-blue-400 transition duration-300">Contact Us</Link></li>
         </ul>
       </nav>
 
@@ -184,39 +153,10 @@ export default function Home() {
 
           </motion.a>
         </motion.div>
+        <div className="tessellation"></div>
+        <div className="glow-lines"></div>
+        <div className="neon-pulses"></div>
       </section>
-
-
-
-      {/* <SectionWrapper id="prizes">
-        <h2 className="text-4xl font-bold mb-8 text-blue-400">Prizes</h2>
-        <div className="space-y-6">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <motion.div
-              key={index}
-              className="bg-white text-black p-6 rounded-lg shadow-lg max-w-3xl w-full hover:shadow-2xl transition duration-300 transform hover:scale-105"
-              whileHover={{ scale: 1.05 }}
-            >
-              <h3 className="text-2xl font-bold">Prize {index + 1}</h3>
-              <p className="mt-2">Details of Prize {index + 1}</p>
-            </motion.div>
-          ))}
-        </div>
-      </SectionWrapper>
-
-      <SectionWrapper id="about">
-        <h2 className="text-4xl font-bold mb-8 text-blue-400">About Us</h2>
-        <p className="max-w-2xl text-lg leading-relaxed">
-          We are the Computer Science Society, dedicated to fostering a culture of innovation and technology. Our goal is to create a platform where students can explore, learn, and excel in various fields of computer science through events, competitions, and networking opportunities.
-        </p>
-      </SectionWrapper>
-
-      <SectionWrapper id="contact">
-        <h2 className="text-4xl font-bold mb-8 text-blue-400">Contact Us</h2>
-        <p className="text-lg">Email: cs.society@example.com</p>
-        <p className="text-lg">Phone: +1234567890</p>
-        <p className="text-lg">Follow us on social media: @cssociety</p>
-      </SectionWrapper> */}
 
       <SectionWrapper id="info">
         <div className="space-y-16 mb-14">
@@ -239,7 +179,7 @@ export default function Home() {
                 <motion.div
                   key={index}
                   className="bg-white hover:text-white hover:bg-gradient-to-b from-[#0d1417] via-[#1c2a33] to-[#374850] flex flex-col items-center justify-center w-[280px] h-[273px] text-black rounded-lg shadow-lg max-w-3xl hover:shadow-2xl transition duration-300 transform hover:scale-105 "
-                  whileHover={{ scale: 1.05 }}
+                  
                 >
                   <h3 className="text-[76px]  font-semibold">{item.title}</h3>
                   <p className="mt-2 text-2xl font-bold ">{item.subtitle}</p>
@@ -252,15 +192,15 @@ export default function Home() {
 
       <SectionWrapper id="About Us">
         <div className="relative w-full max-w-6xl h-full mx-auto overflow-hidden rounded-lg">
-          {/* Images */}
+          {/* Image Carousel */}
           <div
             className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
-            {images.map((src, index) => (
+            {gallery.map((photo, index) => (
               <div key={index} className="w-full flex-shrink-0">
                 <img
-                  src={src}
+                  src={photo.imageUrl}
                   alt={`Slide ${index}`}
                   className="w-full h-[500px] object-cover"
                 />
@@ -268,29 +208,27 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Left Button */}
+          {/* Navigation Buttons */}
           <button
-            onClick={goToPrevious}
+            onClick={() => setCurrentIndex((prev) => (prev > 0 ? prev - 1 : gallery.length - 1))}
             className="absolute top-1/2 left-2 transform -translate-y-1/2 text-white p-2 rounded-full shadow-lg hover:bg-gray-700"
           >
             ◀
           </button>
 
-          {/* Right Button */}
           <button
-            onClick={goToNext}
+            onClick={() => setCurrentIndex((prev) => (prev < gallery.length - 1 ? prev + 1 : 0))}
             className="absolute top-1/2 right-2 transform -translate-y-1/2 text-white p-2 rounded-full shadow-lg hover:bg-gray-700"
           >
             ▶
           </button>
 
-          {/* Dots */}
+          {/* Dots Navigation */}
           <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            {images.map((_, index) => (
+            {gallery.map((_, index) => (
               <button
                 key={index}
-                className={`h-3 w-3 rounded-full ${currentIndex === index ? "bg-white" : "bg-gray-400"
-                  }`}
+                className={`h-3 w-3 rounded-full ${currentIndex === index ? "bg-white" : "bg-gray-400"}`}
                 onClick={() => setCurrentIndex(index)}
               />
             ))}
@@ -307,22 +245,30 @@ export default function Home() {
       </SectionWrapper>
 
       <SectionWrapper id={"Partners"}>
-        <div id="Partners" className="text-center flex flex-col gap-8">
-          <h2 className= " text-6xl font-bold mb-10 text-white">Partners</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 place-items-center">
-            {partners.map((item, index) => (
-              <motion.div
-                key={index}
-                className="bg-white flex flex-col items-center justify-center text-black rounded-lg shadow-lg p-4 hover:bg-gradient-to-b from-[#0d1417] via-[#1c2a33] to-[#374850] hover:text-white transition duration-300 transform hover:scale-105 w-[280px] h-[273px]"
-                whileHover={{ scale: 1.05 }}
-              >
-                <img src={item.logo} alt={item.name} className="w-20 h-20 mb-4 rounded-full shadow-md" />
-                <p className="text-lg font-semibold text-center">{item.name}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </SectionWrapper>
+  <div id="Partners" className="text-center flex flex-col gap-8">
+    <h2 className="text-6xl font-bold mb-10 text-white">Partners</h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 place-items-center">
+      {partners.map((item, index) => (
+        <a 
+          key={index} 
+          href={item.link} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="no-underline"
+        >
+          <motion.div
+            className="bg-white flex flex-col items-center justify-center text-black rounded-lg shadow-lg p-4 hover:bg-gradient-to-b from-[#0d1417] via-[#1c2a33] to-[#374850] hover:text-white transition duration-300 transform hover:scale-105 w-[280px] h-[273px] cursor-pointer"
+            
+          >
+            <img src={item.logo} alt={item.name} className="w-[200px] h-[200px] mb-4 rounded-full shadow-md" />
+            <p className="text-lg font-semibold text-center">{item.name}</p>
+          </motion.div>
+        </a>
+      ))}
+    </div>
+  </div>
+</SectionWrapper>
+
 
 
 
